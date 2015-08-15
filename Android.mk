@@ -47,6 +47,10 @@ ifneq (,$(filter n7100,$(TARGET_DEVICE)))
 	ipc_device_name := n7100
 endif
 
+ifneq (,$(filter klimtlte,$(TARGET_DEVICE)))
+	ipc_device_name := klimtlte
+endif
+
 LOCAL_SRC_FILES := \
 	samsung-ipc/ipc.c \
 	samsung-ipc/ipc_devices.c \
@@ -63,6 +67,7 @@ LOCAL_SRC_FILES := \
 	samsung-ipc/devices/piranha/piranha.c \
 	samsung-ipc/devices/i9300/i9300.c \
 	samsung-ipc/devices/n7100/n7100.c \
+	samsung-ipc/devices/klimtlte/klimtlte.c \
 	samsung-ipc/utils.c \
 	samsung-ipc/call.c \
 	samsung-ipc/sms.c \

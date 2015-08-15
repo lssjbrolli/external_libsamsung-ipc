@@ -20,7 +20,7 @@
 #ifndef __XMM626_H__
 #define __XMM626_H__
 
-#define XMM626_AT                               "ATAT"
+#define XMM626_AT                                               "AT"
 #define XMM626_PSI_PADDING                                      0xFF
 #define XMM626_PSI_MAGIC                                        0x30
 #define XMM626_SEC_END_MAGIC                                    0x0000

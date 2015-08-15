@@ -27,11 +27,11 @@
 #define XMM626_HSIC_PSI_CRC_ACK_COUNT                           2
 #define XMM626_HSIC_PSI_ACK                                     0xAA00
 #define XMM626_HSIC_EBL_SIZE_ACK                                0xCCCC
-#define XMM626_HSIC_EBL_ACK                                     0xA551
+#define XMM626_HSIC_EBL_ACK                                     0xA554
 #define XMM626_HSIC_EBL_CHUNK                                   0x4000
-#define XMM626_HSIC_PORT_CONFIG_SIZE                            0x4C
-#define XMM626_HSIC_SET_PORT_CONFIG_SIZE                        0x800
-#define XMM626_HSIC_SEC_START_SIZE                              0x4000
+#define XMM626_HSIC_PORT_CONFIG_SIZE                            0x808
+#define XMM626_HSIC_SET_PORT_CONFIG_SIZE                        0x808
+#define XMM626_HSIC_SEC_START_SIZE                              0x4008
 #define XMM626_HSIC_SEC_END_SIZE                                0x4000
 #define XMM626_HSIC_HW_RESET_SIZE                               0x4000
 #define XMM626_HSIC_FLASH_SET_ADDRESS_SIZE                      0x4000
@@ -51,7 +51,7 @@ struct xmm626_hsic_command_header {
 } __attribute__((packed));
 
 int xmm626_hsic_psi_send(struct ipc_client *client, int device_fd,
-    const void *psi_data, unsigned short psi_size);
+    const void *psi_data, unsigned long psi_size);
 int xmm626_hsic_ebl_send(struct ipc_client *client, int device_fd,
     const void *ebl_data, size_t ebl_size);
 
