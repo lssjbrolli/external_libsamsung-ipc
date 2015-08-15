@@ -133,6 +133,16 @@ struct ipc_device_desc ipc_devices[] = {
         .gprs_specs = &n7100_gprs_specs,
         .nv_data_specs = &n7100_nv_data_specs,
     },
+    {
+        .name = "klimtlte",
+        .board_name = "samsung exynos5420",
+        .kernel_version = NULL,
+        .fmt_ops = &klimtlte_fmt_ops,
+        .rfs_ops = &klimtlte_rfs_ops,
+        .handlers = &klimtlte_handlers,
+        .gprs_specs = &klimtlte_gprs_specs,
+        .nv_data_specs = &klimtlte_nv_data_specs,
+    },
 };
 
 unsigned int ipc_devices_count = sizeof(ipc_devices) /

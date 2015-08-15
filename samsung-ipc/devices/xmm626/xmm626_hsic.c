@@ -64,7 +64,7 @@ int xmm626_hsic_ack_read(int device_fd, unsigned short ack)
 }
 
 int xmm626_hsic_psi_send(struct ipc_client *client, int device_fd,
-    const void *psi_data, unsigned short psi_size)
+    const void *psi_data, unsigned long psi_size)
 {
     struct xmm626_hsic_psi_header psi_header;
     char at[] = XMM626_AT;
@@ -95,10 +95,10 @@ int xmm626_hsic_psi_send(struct ipc_client *client, int device_fd,
 
         rc = write(device_fd, at, length);
         if (rc < (int) length) {
-            ipc_client_log(client, "Writing ATAT in ASCII failed");
+            ipc_client_log(client, "Sending AT failed");
             goto error;
         }
-        ipc_client_log(client, "Wrote ATAT in ASCII");
+        ipc_client_log(client, "Sent AT command");
 
         rc = select(device_fd + 1, &fds, NULL, NULL, &timeout);
         if (rc < 0) {
@@ -175,8 +175,8 @@ int xmm626_hsic_psi_send(struct ipc_client *client, int device_fd,
 
     rc = write(device_fd, &psi_crc, sizeof(psi_crc));
     if (rc < (int) sizeof(psi_crc)) {
-        ipc_client_log(client, "Writing PSI CRC failed");
-        goto error;
+       ipc_client_log(client, "Writing PSI CRC failed");
+       goto error;
     }
     ipc_client_log(client, "Wrote PSI CRC (0x%x)", psi_crc);
 
@@ -446,7 +446,7 @@ int xmm626_hsic_port_config_send(struct ipc_client *client, int device_fd)
     if (rc <= 0)
         goto error;
 
-    length = XMM626_HSIC_PORT_CONFIG_SIZE;
+    length = XMM626_HSIC_PORT_CONFIG_SIZE; 
     buffer = calloc(1, length);
 
     rc = select(device_fd + 1, &fds, NULL, NULL, &timeout);
