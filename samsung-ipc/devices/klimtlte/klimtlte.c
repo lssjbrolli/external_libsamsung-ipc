@@ -38,12 +38,25 @@ int klimtlte_boot(struct ipc_client *client)
     int modem_boot_fd = -1;
     int modem_link_fd = -1;
     unsigned char *p;
+    char wake_buffer[] = "xmm626x";
     int rc;
+    int wake = -1;
 
     if (client == NULL)
         return -1;
 
     ipc_client_log(client, "Starting klimtlte modem boot");
+    
+    wake = open("/sys/power/wake_lock", O_WRONLY|O_APPEND);
+    rc = write(wake, wake_buffer, strlen(wake_buffer));
+    if (rc < 0) {
+        close(wake);
+        ipc_client_log(client, "Faield to create wakelock");
+        goto error;
+    }
+    close(wake);
+    ipc_client_log(client, "Created wakelock");
+    
 
     modem_image_fd = open(KLIMTLTE_MODEM_IMAGE_DEVICE, O_RDONLY);
     if (modem_image_fd < 0) {
@@ -152,6 +165,31 @@ int klimtlte_boot(struct ipc_client *client)
         goto error;
     }
     ipc_client_log(client, "Sent XMM626 HSIC SEC end");
+    
+    p = (unsigned char *) modem_image_data + KLIMTLTE_SEC_LTE_START_OFFSET;
+    
+    rc = xmm626_hsic_sec_lte_start_send(client, modem_boot_fd, (void *) p, KLIMTLTE_SEC_LTE_START_SIZE);
+    if (rc < 0) {
+        ipc_client_log(client, "Sending XMM626 HSIC SEC LTE start failed");
+        goto error;
+    }
+    ipc_client_log(client, "Sent XMM626 HSIC SEC LTE start");
+    
+    p = (unsigned char *) modem_image_data + KLIMTLTE_LTE_OFFSET;
+
+    rc = xmm626_hsic_lte_send(client, modem_boot_fd, (void *) p, KLIMTLTE_LTE_SIZE);
+    if (rc < 0) {
+        ipc_client_log(client, "Sending XMM626 HSIC LTE failed");
+        goto error;
+    }
+    ipc_client_log(client, "Sent XMM626 HSIC LTE");
+    
+    rc = xmm626_hsic_sec_lte_end_send(client, modem_boot_fd);
+    if (rc < 0) {
+        ipc_client_log(client, "Sending XMM626 HSIC SEC LTE end failed");
+        goto error;
+    }
+    ipc_client_log(client, "Sent XMM626 HSIC SEC LTE end");
 
     rc = xmm626_hsic_hw_reset_send(client, modem_boot_fd);
     if (rc < 0) {
@@ -199,7 +237,7 @@ int klimtlte_boot(struct ipc_client *client)
     }
     ipc_client_log(client, "Waited for link connected");
 
-    usleep(300000);
+    usleep(50000);
 
     rc = 0;
     goto complete;
