@@ -80,7 +80,7 @@ int ipc_device_detect(void)
             c = p;
 
             while (*c != '\n' && *c != '\0') {
-                *c = tolower(*c);
+                //*c = tolower(*c);
                 c++;
             }
 

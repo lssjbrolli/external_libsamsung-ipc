@@ -32,6 +32,18 @@
 #include "xmm626.h"
 #include "xmm626_hsic.h"
 
+#define PRINT_OPAQUE_STRUCT(p)  print_mem((p), sizeof(*(p)))
+
+void print_mem(void const *vp, size_t n)
+{
+    unsigned char const *p = vp;
+    size_t i;
+    
+    for (i=0; i<n; i++)
+        printf("%02x\n", p[i]);
+    putchar('\n');
+};
+
 int xmm626_hsic_ack_read(int device_fd, unsigned short ack)
 {
     struct timeval timeout;
@@ -125,6 +137,7 @@ int xmm626_hsic_psi_send(struct ipc_client *client, int device_fd,
 
     psi_ack = 0;
     rc = read(device_fd, &psi_ack, sizeof(psi_ack));
+    ipc_client_log(client, "Reading boot ACK: 0x%02x", psi_ack);
     if (rc < (int) sizeof(psi_ack)) {
         ipc_client_log(client, "Reading boot ACK failed");
         goto error;
@@ -317,9 +330,15 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
     if (device_fd < 0 || data == NULL || size == 0 || command_data_size == 0 || command_data_size < size)
         return -1;
 
-    header.checksum = (size & 0xffff) + code;
-    header.code = code;
-    header.data_size = size;
+    header.checksum = (size & 0xffff) + code; // 94c0
+    header.code = code; // 204
+    header.data_size = size; // 800
+    
+    printf("checksum: %x\n", (size & 0xffff) + code);
+    printf("code: %x\n", code);
+    printf("data_size: %x\n", size);
+    
+    print_mem(&header, sizeof(header));
 
     p = (unsigned char *) data;
 
@@ -334,7 +353,7 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
     memcpy(p, &header, sizeof(header));
     p += sizeof(header);
     memcpy(p, data, size);
-
+    
     rc = write(device_fd, buffer, length);
     if (rc < (int) length)
         goto error;
@@ -365,11 +384,12 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
         goto error;
 
     rc = read(device_fd, buffer, command_data_size);
-    if (rc < (int) command_data_size)
+    if (rc < (int) command_data_size) 
         goto error;
 
-    if (header.code != code)
+    if (header.code != code) {
         goto error;
+    }
 
     rc = 0;
     goto complete;
@@ -449,10 +469,6 @@ int xmm626_hsic_port_config_send(struct ipc_client *client, int device_fd)
     length = XMM626_HSIC_PORT_CONFIG_SIZE; 
     buffer = calloc(1, length);
 
-    rc = select(device_fd + 1, &fds, NULL, NULL, &timeout);
-    if (rc <= 0)
-        goto error;
-
     rc = read(device_fd, buffer, length);
     if (rc < (int) length) {
         ipc_client_log(client, "Reading port config failed");
@@ -494,6 +510,21 @@ int xmm626_hsic_sec_start_send(struct ipc_client *client, int device_fd,
     return 0;
 }
 
+int xmm626_hsic_sec_lte_start_send(struct ipc_client *client, int device_fd,
+    const void *sec_lte_data, size_t sec_lte_size)
+{
+    int rc;
+
+    if (client == NULL || device_fd < 0 || sec_lte_data == NULL || sec_lte_size == 0)
+        return -1;
+
+    rc = xmm626_hsic_command_send(device_fd, XMM626_COMMAND_SEC_LTE_START, sec_lte_data, sec_lte_size, XMM626_HSIC_SEC_LTE_START_SIZE, 1);
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
 int xmm626_hsic_sec_end_send(struct ipc_client *client, int device_fd)
 {
     unsigned short sec_data;
@@ -513,6 +544,25 @@ int xmm626_hsic_sec_end_send(struct ipc_client *client, int device_fd)
     return 0;
 }
 
+int xmm626_hsic_sec_lte_end_send(struct ipc_client *client, int device_fd)
+{
+    unsigned short sec_data;
+    size_t sec_size;
+    int rc;
+
+    if (client == NULL || device_fd < 0)
+        return -1;
+
+    sec_data = XMM626_SEC_LTE_END_MAGIC;
+    sec_size = sizeof(sec_data);
+
+    rc = xmm626_hsic_command_send(device_fd, XMM626_COMMAND_SEC_LTE_END, &sec_data, sec_size, XMM626_HSIC_SEC_LTE_END_SIZE, 1);
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
 int xmm626_hsic_firmware_send(struct ipc_client *client, int device_fd,
     const void *firmware_data, size_t firmware_size)
 {
@@ -522,6 +572,21 @@ int xmm626_hsic_firmware_send(struct ipc_client *client, int device_fd,
         return -1;
 
     rc = xmm626_hsic_modem_data_send(device_fd, firmware_data, firmware_size, XMM626_FIRMWARE_ADDRESS);
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
+int xmm626_hsic_lte_send(struct ipc_client *client, int device_fd,
+    const void *lte_data, size_t lte_size)
+{
+    int rc;
+
+    if (client == NULL || device_fd < 0 || lte_data == NULL || lte_size == 0)
+        return -1;
+
+    rc = xmm626_hsic_modem_data_send(device_fd, lte_data, lte_size, XMM626_LTE_ADDRESS);
     if (rc < 0)
         return -1;
 

@@ -135,7 +135,7 @@ struct ipc_device_desc ipc_devices[] = {
     },
     {
         .name = "klimtlte",
-        .board_name = "samsung exynos5420",
+        .board_name = "UNIVERSAL5420",
         .kernel_version = NULL,
         .fmt_ops = &klimtlte_fmt_ops,
         .rfs_ops = &klimtlte_rfs_ops,

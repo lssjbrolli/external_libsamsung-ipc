@@ -28,11 +28,13 @@
 #define XMM626_HSIC_PSI_ACK                                     0xAA00
 #define XMM626_HSIC_EBL_SIZE_ACK                                0xCCCC
 #define XMM626_HSIC_EBL_ACK                                     0xA554
-#define XMM626_HSIC_EBL_CHUNK                                   0x4000
-#define XMM626_HSIC_PORT_CONFIG_SIZE                            0x808
-#define XMM626_HSIC_SET_PORT_CONFIG_SIZE                        0x808
-#define XMM626_HSIC_SEC_START_SIZE                              0x4008
+#define XMM626_HSIC_EBL_CHUNK                                   0x2000
+#define XMM626_HSIC_PORT_CONFIG_SIZE                            0x4C
+#define XMM626_HSIC_SET_PORT_CONFIG_SIZE                        0x800
+#define XMM626_HSIC_SEC_START_SIZE                              0x4000
 #define XMM626_HSIC_SEC_END_SIZE                                0x4000
+#define XMM626_HSIC_SEC_LTE_START_SIZE                          0x4000
+#define XMM626_HSIC_SEC_LTE_END_SIZE                            0x4000
 #define XMM626_HSIC_HW_RESET_SIZE                               0x4000
 #define XMM626_HSIC_FLASH_SET_ADDRESS_SIZE                      0x4000
 #define XMM626_HSIC_FLASH_WRITE_BLOCK_SIZE                      0x4000
@@ -58,9 +60,14 @@ int xmm626_hsic_ebl_send(struct ipc_client *client, int device_fd,
 int xmm626_hsic_port_config_send(struct ipc_client *client, int device_fd);
 int xmm626_hsic_sec_start_send(struct ipc_client *client, int device_fd,
     const void *sec_data, size_t sec_size);
+int xmm626_hsic_sec_lte_start_send(struct ipc_client *client, int device_fd,
+    const void *sec_data, size_t sec_size);
 int xmm626_hsic_sec_end_send(struct ipc_client *client, int device_fd);
+int xmm626_hsic_sec_lte_end_send(struct ipc_client *client, int device_fd);
 int xmm626_hsic_firmware_send(struct ipc_client *client, int device_fd,
     const void *firmware_data, size_t firmware_size);
+int xmm626_hsic_lte_send(struct ipc_client *client, int device_fd,
+    const void *lte_data, size_t lte_size);
 int xmm626_hsic_nv_data_send(struct ipc_client *client, int device_fd);
 int xmm626_hsic_hw_reset_send(struct ipc_client *client, int device_fd);
 

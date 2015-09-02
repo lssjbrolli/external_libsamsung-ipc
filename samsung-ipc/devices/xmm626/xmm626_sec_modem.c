@@ -78,7 +78,7 @@ int xmm626_sec_modem_status_online_wait(int device_fd)
         if (status == STATE_ONLINE)
             return 0;
 
-        usleep(50000);
+        usleep(500000);
     }
 
     return -1;
@@ -86,17 +86,13 @@ int xmm626_sec_modem_status_online_wait(int device_fd)
 
 int xmm626_sec_modem_hci_power(int power)
 {
-    int ehci_rc, ohci_rc;
+    int ehci_rc;
 
     ehci_rc = sysfs_value_write(XMM626_SEC_MODEM_EHCI_POWER_SYSFS, !!power);
     if (ehci_rc >= 0)
         usleep(50000);
 
-    ohci_rc = sysfs_value_write(XMM626_SEC_MODEM_OHCI_POWER_SYSFS, !!power);
-    if (ohci_rc >= 0)
-        usleep(50000);
-
-    if (ehci_rc < 0 && ohci_rc < 0)
+    if (ehci_rc < 0)
         return -1;
 
     return 0;
@@ -106,10 +102,15 @@ int xmm626_sec_modem_link_control_enable(int device_fd, int enable)
 {
     int rc;
 
+    
+    
     if (device_fd < 0)
         return -1;
 
     rc = ioctl(device_fd, IOCTL_LINK_CONTROL_ENABLE, &enable);
+    
+    printf("xmm626_sec_modem_link_control_enable: %d\n", rc);
+    
     if (rc < 0)
         return -1;
 
@@ -139,12 +140,12 @@ int xmm626_sec_modem_link_connected_wait(int device_fd)
         return -1;
 
     i = 0;
-    for (i = 0; i < 100; i++) {
+    for (i = 0; i < 10; i++) {
         status = ioctl(device_fd, IOCTL_LINK_CONNECTED, 0);
         if (status)
             return 0;
 
-        usleep(50000);
+        usleep(500000);
     }
 
     return -1;
