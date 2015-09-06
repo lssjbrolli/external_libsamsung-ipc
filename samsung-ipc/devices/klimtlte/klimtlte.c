@@ -51,7 +51,7 @@ int klimtlte_boot(struct ipc_client *client)
     rc = write(wake, wake_buffer, strlen(wake_buffer));
     if (rc < 0) {
         close(wake);
-        ipc_client_log(client, "Faield to create wakelock");
+        ipc_client_log(client, "Failed to create wakelock");
         goto error;
     }
     close(wake);
@@ -72,7 +72,7 @@ int klimtlte_boot(struct ipc_client *client)
     }
     ipc_client_log(client, "Mapped modem image data to memory");
 
-    modem_boot_fd = open(XMM626_SEC_MODEM_BOOT0_DEVICE, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    modem_boot_fd = open(XMM626_SEC_MODEM_BOOT0_DEVICE, O_RDWR);
     if (modem_boot_fd < 0) {
         ipc_client_log(client, "Opening modem boot device failed");
         goto error;
@@ -209,12 +209,16 @@ int klimtlte_boot(struct ipc_client *client)
     rc |= xmm626_sec_modem_hci_power(0);
     rc |= xmm626_sec_modem_link_control_active(modem_link_fd, 0);
 
+    if(xmm626_sec_modem_link_connected_wait(modem_link_fd) < 0)
+        ipc_client_log(client, "Link connected failed");
     if (rc < 0) {
         ipc_client_log(client, "Turning the modem off failed");
         goto error;
     }
 
     rc = xmm626_sec_modem_link_get_hostwake_wait(modem_link_fd);
+    if(xmm626_sec_modem_link_connected_wait(modem_link_fd) < 0)
+        ipc_client_log(client, "Link connected failed");
     if (rc < 0) {
         ipc_client_log(client, "Waiting for host wake failed");
         goto error;
@@ -224,6 +228,9 @@ int klimtlte_boot(struct ipc_client *client)
     rc = xmm626_sec_modem_link_control_enable(modem_link_fd, 1);
     rc |= xmm626_sec_modem_hci_power(1);
     rc |= xmm626_sec_modem_link_control_active(modem_link_fd, 1);
+
+    if(xmm626_sec_modem_link_connected_wait(modem_link_fd) < 0)
+        ipc_client_log(client, "Link connected failed");
 
     if (rc < 0) {
         ipc_client_log(client, "Turning the modem on failed");
@@ -238,6 +245,16 @@ int klimtlte_boot(struct ipc_client *client)
     ipc_client_log(client, "Waited for link connected");
 
     usleep(50000);
+
+    wake = open("/sys/power/wake_unlock", O_WRONLY|O_APPEND);
+    rc = write(wake, wake_buffer, strlen(wake_buffer));
+    if (rc < 0) {
+        close(wake);
+        ipc_client_log(client, "Failed to create wakelock");
+        goto error;
+    }
+    close(wake);
+    ipc_client_log(client, "Remove wakelock");
 
     rc = 0;
     goto complete;
@@ -434,7 +451,7 @@ struct ipc_client_nv_data_specs klimtlte_nv_data_specs = {
     .nv_data_backup_md5_path = XMM626_NV_DATA_BACKUP_MD5_PATH,
     .nv_data_secret = XMM626_NV_DATA_SECRET,
     .nv_data_size = XMM626_NV_DATA_SIZE,
-    .nv_data_chunk_size = XMM626_NV_DATA_CHUNK_SIZE,
+    .nv_data_chunk_size = KLIMTLTE_NV_DATA_SIZE,
 };
 
 // vim:ts=4:sw=4:expandtab
