@@ -249,7 +249,7 @@ int sysfs_value_write(const char *path, int value)
     if (fd < 0)
         goto error;
 
-    snprintf((char *) &buffer, sizeof(buffer), "%d\n", value);
+    snprintf((char *) &buffer, sizeof(buffer), "%d", value);
 
     rc = write(fd, buffer, strlen(buffer));
     if (rc < (int) strlen(buffer))
