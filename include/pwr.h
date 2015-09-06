@@ -40,7 +40,7 @@
  * Values
  */
 
-#define IPC_PWR_PHONE_STATE_REQUEST_LPM                         0x0001
+#define IPC_PWR_PHONE_STATE_REQUEST_LPM                         0x0100
 #define IPC_PWR_PHONE_STATE_REQUEST_NORMAL                      0x0202
 
 #define IPC_PWR_PHONE_STATE_RESPONSE_LPM                        0x01

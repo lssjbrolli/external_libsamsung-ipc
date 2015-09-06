@@ -34,16 +34,6 @@
 
 #define PRINT_OPAQUE_STRUCT(p)  print_mem((p), sizeof(*(p)))
 
-void print_mem(void const *vp, size_t n)
-{
-    unsigned char const *p = vp;
-    size_t i;
-    
-    for (i=0; i<n; i++)
-        printf("%02x\n", p[i]);
-    putchar('\n');
-};
-
 int xmm626_hsic_ack_read(int device_fd, unsigned short ack)
 {
     struct timeval timeout;
@@ -330,18 +320,11 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
     if (device_fd < 0 || data == NULL || size == 0 || command_data_size == 0 || command_data_size < size)
         return -1;
 
-    header.checksum = (size & 0xffff) + code; // 94c0
-    header.code = code; // 204
-    header.data_size = size; // 800
-    
-    printf("checksum: %x\n", (size & 0xffff) + code);
-    printf("code: %x\n", code);
-    printf("data_size: %x\n", size);
-    
-    print_mem(&header, sizeof(header));
+    header.checksum = (size & 0xffff) + code;
+    header.code = code;
+    header.data_size = size;
 
     p = (unsigned char *) data;
-
     for (i = 0; i < (int) size; i++)
         header.checksum += *p++;
 

@@ -102,14 +102,10 @@ int xmm626_sec_modem_link_control_enable(int device_fd, int enable)
 {
     int rc;
 
-    
-    
     if (device_fd < 0)
         return -1;
 
     rc = ioctl(device_fd, IOCTL_LINK_CONTROL_ENABLE, &enable);
-    
-    printf("xmm626_sec_modem_link_control_enable: %d\n", rc);
     
     if (rc < 0)
         return -1;
@@ -140,7 +136,7 @@ int xmm626_sec_modem_link_connected_wait(int device_fd)
         return -1;
 
     i = 0;
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 5; i++) {
         status = ioctl(device_fd, IOCTL_LINK_CONNECTED, 0);
         if (status)
             return 0;

@@ -43,11 +43,11 @@
 #define XMM626_LTE_ADDRESS                                      0x87BF0000
 #define XMM626_MPS_DATA_ADDRESS                                 0x61080000
 
-#define XMM626_NV_DATA_PATH                     "/efs/nv_data.bin"
-#define XMM626_NV_DATA_MD5_PATH                 "/efs/nv_data.bin.md5"
-#define XMM626_NV_DATA_BACKUP_PATH              "/efs/.nv_data.bak"
-#define XMM626_NV_DATA_BACKUP_MD5_PATH          "/efs/.nv_data.bak.md5"
-#define XMM626_NV_DATA_SECRET                   "Samsung_Android_RIL"
+#define XMM626_NV_DATA_PATH                                     "/efs/nv_data.bin"
+#define XMM626_NV_DATA_MD5_PATH                                 "/efs/nv_data.bin.md5"
+#define XMM626_NV_DATA_BACKUP_PATH                              "/efs/.nv_data.bak"
+#define XMM626_NV_DATA_BACKUP_MD5_PATH                          "/efs/.nv_data.bak.md5"
+#define XMM626_NV_DATA_SECRET                                   "Samsung_Android_RIL"
 #define XMM626_NV_DATA_SIZE                                     0x110000
 #define XMM626_NV_DATA_CHUNK_SIZE                               0x1000
 

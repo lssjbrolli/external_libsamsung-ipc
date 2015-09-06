@@ -325,7 +325,7 @@ int ipc_client_send(struct ipc_client *client, unsigned char mseq,
 
     memset(&message, 0, sizeof(message));
     message.mseq = mseq;
-    message.aseq = 0xff;
+    message.aseq = 0x00;
     message.command = command;
     message.type = type;
     message.data = (void *) data;
