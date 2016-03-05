@@ -24,9 +24,11 @@ ltmain.sh
 ylwrap
 compile
 stamp-h1
+INSTALL
 
 *.pc
 build
 core
-modemctrl
-samsung_ipc_forward
+ipc-modem
+ipc-test
+nv_data-md5

@@ -431,7 +431,9 @@ int modem_start(struct ipc_client *client)
     int rc = -1;
 
     ipc_client_data_create(client);
-    ipc_client_boot(client);
+    rc = ipc_client_boot(client);
+    if(rc < 0)
+        return -1;
 
     usleep(300);
 
@@ -526,7 +528,7 @@ int main(int argc, char *argv[])
         ipc_client_log_callback_register(client_fmt, modem_log_handler_quiet, NULL);
     else ipc_client_log_callback_register(client_fmt, modem_log_handler, NULL);
 
-    while(opt_i < argc) {
+    while(optind < argc) {
         if(strncmp(argv[optind], "power-on", 8) == 0) {
             if (ipc_client_power_on(client_fmt) < 0)
                 printf("[E] Something went wrong while powering modem on\n");
@@ -536,7 +538,9 @@ int main(int argc, char *argv[])
                 printf("[E] Something went wrong while powering modem off\n");
             goto modem_quit;
         } else if (strncmp(argv[optind], "boot", 9) == 0) {
-            ipc_client_boot(client_fmt);
+            rc = ipc_client_boot(client_fmt);
+            if (rc < 0)
+                printf("[E] Something went wrong while bootstrapping modem\n");
         } else if(strncmp(argv[optind], "start", 5) == 0) {
             printf("[0] Starting modem on FMT client\n");
             rc = modem_start(client_fmt);
