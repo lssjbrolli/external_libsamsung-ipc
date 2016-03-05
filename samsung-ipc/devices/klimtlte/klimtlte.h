@@ -28,12 +28,12 @@
 #define KLIMTLTE_SEC_START_OFFSET                                  0x1635900
 #define KLIMTLTE_SEC_START_SIZE                                    0x800
 #define KLIMTLTE_FIRMWARE_OFFSET                                   0x35000
-#define KLIMTLTE_FIRMWARE_SIZE                                     0xDE35D4
+#define KLIMTLTE_FIRMWARE_SIZE                                     0xDE5C5C
 #define KLIMTLTE_NV_DATA_SIZE                                      0x110000
 #define KLIMTLTE_SEC_LTE_START_OFFSET                              0x1A36100
 #define KLIMTLTE_SEC_LTE_START_SIZE                                0x800
 #define KLIMTLTE_LTE_OFFSET                                        0x1636100
-#define KLIMTLTE_LTE_SIZE                                          0x28FDC0
+#define KLIMTLTE_LTE_SIZE                                          0x290220
 
 #define KLIMTLTE_MODEM_IMAGE_DEVICE                                "/dev/block/mmcblk0p13"
 

@@ -316,6 +316,7 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
     unsigned char *p;
     int rc;
     int i;
+    unsigned int return_size = 0;
 
     if (device_fd < 0 || data == NULL || size == 0 || command_data_size == 0 || command_data_size < size)
         return -1;
@@ -362,17 +363,18 @@ int xmm626_hsic_command_send(int device_fd, unsigned short code,
     if (rc < (int) sizeof(header))
         goto error;
 
-    rc = select(device_fd + 1, &fds, NULL, NULL, &timeout);
-    if (rc <= 0)
-        goto error;
+    while (return_size < command_data_size) {
+        rc = select(device_fd + 1, &fds, NULL, NULL, &timeout);
+        if (rc <= 0)
+            goto error;
 
-    rc = read(device_fd, buffer, command_data_size);
-    if (rc < (int) command_data_size) 
-        goto error;
-
-    if (header.code != code) {
-        goto error;
+        rc = read(device_fd, buffer, command_data_size);
+        
+        return_size += rc;
     }
+    
+    if (header.code != code)
+        goto error;
 
     rc = 0;
     goto complete;
